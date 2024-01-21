@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "eindopdracht-partygram-pgm-teynyuse",
-    "slug": "eindopdracht-partygram-pgm-teynyuse",
+    "name": "Teynur PartyGram",
+    "slug": "partygram-teynur",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.teynur.partygram"
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +34,16 @@
       "expo-router"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6f4a7a3c-1495-401e-8990-daf2587cbda0"
+      }
     }
   }
 }
