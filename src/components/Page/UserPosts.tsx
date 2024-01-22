@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Image, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { Image, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Text, View } from "../Themed";
 import { useAuthContext } from "@shared/Auth/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../../core/modules/posts/api";
 import { useRouter } from "expo-router";
 import { FontAwesome, Fontisto } from "@expo/vector-icons";
+import { Post } from "@core/modules/posts/types";
 
 const UserPosts = () => {
   const { user } = useAuthContext();
+  const router = useRouter();
+
+      const handlePostPress = (post: Post) => {
+        router.push(`/posts/${post.id}`);
+        console.log("test", post.id);
+      };
 
     const {
       data: posts,
@@ -51,12 +58,14 @@ const UserPosts = () => {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handlePostPress(item)}>
           <View style={styles.item}>
             <Image
-              source={{ uri: item.image }}
+                source={{ uri: item.image || undefined }}
               style={styles.image}
             />
           </View>
+          </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
         numColumns={4}

@@ -9,8 +9,6 @@ import PostForm from "@shared/Posts/PostForm";
 import StoryForm from "@shared/Stories/StoryForm";
 import React, { useState } from "react";
 import { Text, View, Button } from "react-native";
-import { Story } from "@core/modules/stories/types";
-
 const CreatePost = () => {
   const { user } = useAuthContext();
   const router = useRouter();
@@ -48,7 +46,7 @@ const CreatePost = () => {
       />
       {isPostFormActive ? (
         <PostForm
-          initialValues={{ description: "" }}
+          initialValues={{ description: ""}}
           onSuccess={handlePostSuccess}
           updateMethod={createPostWithUser}
           label="Create Post"

@@ -1,5 +1,5 @@
 import isVoid from "@core/utils/isVoid";
-import { useNavigation } from "expo-router"; j
+import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 
 const useTitle = (title: string | null) => {
@@ -9,6 +9,7 @@ useEffect(() => {
     if (!isVoid(title)) {
     navigation.setOptions({
         title: title,
+        
     });
     }
 }, [title]);

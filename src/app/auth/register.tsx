@@ -9,6 +9,8 @@ import { StatusBar } from "expo-status-bar";
 const RegisterScreen = () => {
 const router = useRouter();
 
+useTitle("Create account");
+
 return (
     <>
     <DefaultView>

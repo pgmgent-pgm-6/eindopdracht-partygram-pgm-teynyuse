@@ -6,24 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { useAuthContext } from "@shared/Auth/AuthProvider";
-import { createProfile, getProfile, updateUserAvatar } from "../../../core/modules/profiles/api";
-import { logout } from "../../../core/modules/auth/api";
-import UserPosts from "../../../components/Page/UserPosts";
-import { QueryKey, useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
-import ProfileForm from "@shared/User/ProfileForm";
-import { useEffect, useState } from "react";
-import ImagePickerDialog from "@design/ImagePicker/ImagePickerDialog";
-import { getImageUrl } from "@core/modules/posts/utils"; 
-import isVoid from "@core/utils/isVoid";
+import { getProfile } from "../../../../core/modules/profiles/api";
+import { QueryKey, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 
 const ProfileScreen = () => {
-  const { user } = useAuthContext();
-  const router = useRouter();
-
-
-
+    const { id } = useLocalSearchParams<{ id: string }>();
+console.log("detail", id);
   const {
     data: profile,
     isLoading,
@@ -31,28 +21,11 @@ const ProfileScreen = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["profile", user?.id ?? ""],
-    queryFn: () => getProfile(user?.id ?? ""),
+    queryKey: ["profile", id ?? ""],
+    queryFn: () => getProfile(id ?? ""),
   });
 
-   const [showPicker, setShowPicker] = useState(false);
-     const { mutate, isPending, } = useMutation({
-       mutationFn: (file: string) => updateUserAvatar(file),
-     });
-
-       const handleAvatarPress = () => {
-         setShowPicker(true);
-       };
-
-         const handleImage = async (image: string) => {
-           // hide picker
-           setShowPicker(false);
-           if (!isVoid(image)) {
-             mutate(image);
-           }
-         };
-
-         const avatarUrl = getImageUrl();
+  console.log("test",id);
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -62,9 +35,6 @@ const ProfileScreen = () => {
     return <Text>Error: {error.message}</Text>;
   }
 
-  useEffect(() => {
-    refetch();
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -89,14 +59,8 @@ const ProfileScreen = () => {
             </Text>
           </View>
           <View style={styles.buttons}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => logout()}
-            >
-              <Text style={{ color: "#fff" }}>Logout</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.editButton}>
-              <Text style={{ color: "#fff" }}>Settings</Text>
+              <Text style={{ color: "#fff" }}>Chat</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -108,7 +72,6 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <UserPosts />
         </View>
       </View>
     </View>
@@ -124,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  buttons:{
+  buttons: {
     flexDirection: "row",
     marginTop: 12,
     alignItems: "center",

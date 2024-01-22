@@ -9,3 +9,5 @@ export const getImageUrl = (post?: Post | null) => {
   }
   return getPublicUrl(Bucket.Posts, post.image);
 };
+
+

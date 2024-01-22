@@ -1,14 +1,15 @@
 import { getStory } from "../../../../core/modules/stories/api";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "../../../../components/Themed";
 import { Image, StyleSheet } from "react-native";
 
 const StoryDetail = () => {
   const router = useRouter();
   const navigation = useNavigation();
+  navigation.setOptions({
+    header: () => null,
+  });
   const [story, setStory] = useState(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,8 +35,15 @@ const StoryDetail = () => {
       const storyData = await getStory(id);
       setStory(storyData);
     };
+
     fetchStory();
-  }, []);
+
+    const timer = setTimeout(() => {
+      navigation.goBack();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   return (
     <View>

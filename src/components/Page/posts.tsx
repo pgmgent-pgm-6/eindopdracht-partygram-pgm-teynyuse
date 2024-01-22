@@ -18,6 +18,7 @@ import CreateComment from "@shared/Comments/CreateComment";
 import { getProfile } from "@core/modules/profiles/api";
 import { Post } from "@core/modules/posts/types";
 import { useRouter } from "expo-router";
+import { Profile } from "@core/modules/profiles/types";
 
 
 const Posts = () => {
@@ -33,6 +34,13 @@ const Posts = () => {
       console.log("test", post.id);
     };
 
+    const handleUserPress = (profile: Profile) => {
+      router.push(`/profiles/${profile.user_id}`);
+    console.log("user", profile);
+    };
+
+          
+
 
     const {
       data: profile,
@@ -41,7 +49,7 @@ const Posts = () => {
       queryFn: () => getProfile(user?.id ?? ""),
     });
 
-    console.log("profile", profile);
+    console.log("profile", profile?.user_id);
 
 
   if (isError) {
@@ -98,39 +106,46 @@ const Posts = () => {
   };
 
   return (
-    <View>
+    <View >
       <FlatList
         data={data}
         style={{ marginBottom: 200, marginTop: 10 }}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handlePostPress(item)}>
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <View style={styles.userInfo}>
-                <ConditionalImage
-                  style={styles.avatar}
-                  sourceUri={item.profile.avatar}
-                />
-                <View style={styles.postInfo}>
-                  <Text style={styles.username}>{item.profile.username}</Text>
-                  <Text>{item.location}</Text>
+              <TouchableOpacity onPress={() => handleUserPress(item.profile?.user_id)}>
+                <View style={styles.userInfo}>
+                  <ConditionalImage
+                    style={styles.avatar}
+                    sourceUri={item.profile.avatar}
+                  />
+                  <View style={styles.postInfo}>
+                    <Text style={styles.username}>{item.profile.username}</Text>
+                    <Text>{item.location}</Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
               <View>
                 <Text style={styles.grayText}>
                   {timeSince(item.created_at)}
                 </Text>
               </View>
             </View>
-            <ConditionalImage style={styles.image} sourceUri={item.image} />
+            <TouchableOpacity onPress={() => handlePostPress(item)}>
+              <ConditionalImage style={styles.image} sourceUri={item.image} />
+            </TouchableOpacity>
             <View style={styles.icons}>
               <View style={{ flexDirection: "row" }}>
                 <CreateLike
                   onSuccess={handleSuccess}
                   post_id={item.id}
-                  liker_id={user?.id ?? ""}
-                />
+                  liker_id={user?.id ?? ""} initialValues={{
+                    created_at: undefined,
+                    id: undefined,
+                    liker_id: user?.id ?? "",
+                    post_id: item.id,
+                  }}                />
                 <Fontisto
                   style={styles.icon}
                   name="comment"
@@ -157,7 +172,6 @@ const Posts = () => {
             </View>
             <Text style={styles.grayText}>{formatDate(item.created_at)}</Text>
           </View>
-          </TouchableOpacity>
         )}
       />
     </View>
@@ -174,7 +188,10 @@ const Posts = () => {
       shadowOpacity: 0.25,
       shadowRadius: 3.84,
       elevation: 5,
-      paddingBottom: 15,
+      marginBottom: 200,
+    },
+    bottom: {
+      marginBottom: 200,
     },
     grayText: {
       fontSize: 15,

@@ -9,8 +9,17 @@ import { CreateUserBody, UpdateUserBody } from "@core/modules/auth/types";
 
 const getSchema = (options: Options) => {
   return yup.object().shape({
-    email: yup.string().email().required(),
-    ...(options.showPassword ? { password: yup.string().min(8).required() } : {}),
+    email: yup
+      .string()
+      .email("Ongeldig e-mailformaat")
+      .required("E-mail is vereist")
+      .matches(
+        /@(student\.)?arteveldehs\.be$/,
+        "E-mail moet eindigen op @student.arteveldehs.be of @arteveldehs.be"
+      ),
+    ...(options.showPassword
+      ? { password: yup.string().min(8).required("Wachtwoord is vereist") }
+      : {}),
   });
 };
 
@@ -62,6 +71,7 @@ const UserForm = <T extends CreateUserBody | UpdateUserBody>({
           autoComplete="email"
           keyboardType="email-address"
           disabled={isPending}
+          placeholder="student.arteveldehs.be of @arteveldehs.be "
         />
         {formOptions.showPassword && (
           <AppTextField name="password" label="Password" secureTextEntry={true} disabled={isPending} />

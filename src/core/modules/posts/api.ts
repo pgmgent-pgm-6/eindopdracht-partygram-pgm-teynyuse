@@ -4,13 +4,13 @@ import { Post, CreatePostBody, UpdatePostBody, PostWithRelations } from "./types
 export const getPosts = async (): Promise<PostWithRelations[]> => {
   const { data, error } = await supabase
     .from("Posts")
-    .select(`*, profile:Profiles (username, avatar)`)
+    .select(`*, profile:Profiles (username, avatar, user_id)`)
     .order("created_at", { ascending: false});
   if (error) throw error;
   return data ?? [];
 };
 
-export const getPost = async (id: string): Promise<Post | null> => {
+export const getPost = async (id: string): Promise<PostWithRelations[] | null> => {
   const { data, error } = await supabase
     .from("Posts")
     .select("*")
@@ -48,6 +48,15 @@ export const updatePost = async (post: UpdatePostBody) => {
     .select()
     .throwOnError()
     .single();
+  return Promise.resolve(response.data);
+};
+
+export const deletePost = async (uid: number) => {
+  const response = await supabase
+    .from("Posts")
+    .delete()
+    .eq("id", uid)
+    .throwOnError();
   return Promise.resolve(response.data);
 };
 
