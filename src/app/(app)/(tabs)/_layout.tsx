@@ -1,47 +1,77 @@
-import { FontAwesome, Fontisto } from "@expo/vector-icons";
-import { Link, Tabs } from "expo-router";
-import { Pressable, useColorScheme } from "react-native";
+import { Tabs, useRouter } from "expo-router";
+import { DefaultNavigatorOptions, Variables } from "@style";
+import Icons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import Colors from "../../../../constants/Colors";
+const getTabIcon = (name: string, focused: boolean) => {
+  let icon = "";
+  switch (name) {
+    case "index":
+      icon = "home";
+      break;
+    case "profile":
+      icon = "account";
+      break;
+    case "search":
+      icon = "magnify";
+      break;
+    case "chat":
+      icon = "message";
+      break;
+    case "create":
+      icon = "plus";
+      break;
+  }
+  return icon;
+};
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"],
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />
-  ;
-}
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const TabLayout = () => {
+  const router = useRouter();
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-      }}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => (
+          <Icons
+            name={getTabIcon(route.name, focused)}
+            size={size}
+            color={color}
+          />
+        ),
+        tabBarInactiveTintColor: Variables.colors.gray,
+        ...DefaultNavigatorOptions.screenOptions,
+      })}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: "Search",
         }}
       />
       <Tabs.Screen
         name="create"
         options={{
           title: "Add Post",
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus-square-o" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Chats",
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

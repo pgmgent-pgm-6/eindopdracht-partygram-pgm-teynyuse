@@ -24,3 +24,11 @@ export const getStory = async (id: string): Promise<Story | null> => {
   }
   return data;
 };
+
+export const createStory = async (body: any) => {
+  const { data, error } = await supabase.from("Stories").insert(body);
+  if (error) {
+    throw error;
+  }
+  return data;
+};

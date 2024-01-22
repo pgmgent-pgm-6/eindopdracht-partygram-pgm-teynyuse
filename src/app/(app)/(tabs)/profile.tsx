@@ -7,13 +7,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuthContext } from "@shared/Auth/AuthProvider";
-import { getProfile } from "../../../core/modules/profiles/api";
+import { createProfile, getProfile } from "../../../core/modules/profiles/api";
 import { logout } from "../../../core/modules/auth/api";
 import UserPosts from "../../../components/Page/UserPosts";
 import { QueryKey, useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import ProfileForm from "@shared/User/ProfileForm";
 
 const ProfileScreen = () => {
   const { user } = useAuthContext();
+  const router = useRouter();
 
   const {
     data: profile,
@@ -21,7 +24,7 @@ const ProfileScreen = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["profile", user?.id ?? ""], 
+    queryKey: ["profile", user?.id ?? ""],
     queryFn: () => getProfile(user?.id ?? ""),
   });
 
@@ -33,6 +36,10 @@ const ProfileScreen = () => {
     return <Text>Error: {error.message}</Text>;
   }
 
+  if (!profile) {
+    router.push("/login"); 
+    return null; 
+  }
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -45,7 +52,15 @@ const ProfileScreen = () => {
             <Text style={styles.userInfo}>
               {profile?.first_name ?? ""} {profile?.last_name ?? ""}
             </Text>
-            <Text style={styles.username}>{profile?.username ?? ""}</Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "normal",
+                marginRight: "auto",
+              }}
+            >
+              {profile?.username ?? ""}
+            </Text>
           </View>
           <View style={styles.buttons}>
             <TouchableOpacity
@@ -67,7 +82,7 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <UserPosts  />
+          <UserPosts />
         </View>
       </View>
     </View>

@@ -11,8 +11,6 @@ const getSchema = (options: Options) => {
   return yup.object().shape({
     email: yup.string().email().required(),
     ...(options.showPassword ? { password: yup.string().min(8).required() } : {}),
-    first_name: yup.string().required(),
-    last_name: yup.string().required(),
   });
 };
 
@@ -68,8 +66,6 @@ const UserForm = <T extends CreateUserBody | UpdateUserBody>({
         {formOptions.showPassword && (
           <AppTextField name="password" label="Password" secureTextEntry={true} disabled={isPending} />
         )}
-        <AppTextField name="first_name" label="First name" disabled={isPending} />
-        <AppTextField name="last_name" label="Last name" disabled={isPending} />
         <AppSubmitButton disabled={isPending}>{label}</AppSubmitButton>
       </View>
     </AppForm>

@@ -10,5 +10,15 @@ export const getPostComments = async (postId: number) => {
   return { data, error };
 };
 
+export const createComment = async (comment: CreateCommentBody) => {
+  const response = await supabase
+    .from("Comments")
+    .insert(comment)
+    .select()
+    .throwOnError()
+    .single();
+  return Promise.resolve(response.data);
+};
+
 
 

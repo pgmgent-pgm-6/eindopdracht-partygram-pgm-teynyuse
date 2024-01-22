@@ -1,45 +1,61 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import * as yup from "yup";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ErrorMessage from "@design/Text/ErrorMessage";
 import { CreateLikeBody, UpdateLikeBody } from "@core/modules/likes/types";
 import AppForm from "@shared/Formik/AppForm";
-import AppSubmitButton from "@shared/Formik/AppSubmitButton";
-import { createLike } from "@core/modules/likes/api";
+import AppLikeButton from "@shared/Formik/AppLikeButton";
+import { createLike, checkLiked } from "@core/modules/likes/api";
 
 const schema = yup.object().shape({
   post_id: yup.number(),
   liker_id: yup.string(),
 });
 
-
-
 type Props<T, U> = {
   post_id: number;
   liker_id: string;
   onSuccess: (data: U) => void;
-  updateMethod: (values: T) => Promise<U>;
+  initialValues: T;
 };
 
-const PostForm =  <T extends CreateLikeBody | UpdateLikeBody, U>({
+const CreateLike = <T extends CreateLikeBody | UpdateLikeBody, U>({
   post_id,
   liker_id,
   onSuccess,
-  updateMethod,
+  initialValues,
 }: Props<T, U>) => {
+  const queryClient = useQueryClient();
+
   const { mutate, isError, error } = useMutation({
     mutationFn: createLike,
-    onSuccess: onSuccess,
+    onSuccess: (data) => {
+
+      queryClient.invalidateQueries({ 
+        queryKey: ["likes", post_id, liker_id] });
+      if (onSuccess) {
+        onSuccess(data);
+      }
+    },
   });
 
-  const initialValues = { post_id, liker_id  };
+  const { data: likesData, isLoading: isLoadingLikes } = useQuery({
+    queryFn: () => checkLiked(post_id, liker_id),
+    queryKey: ["likes", post_id, liker_id],
+  });
 
-  const handleSubmit = async (values: T) => {
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    if (!isLoadingLikes && likesData) {
+      setIsLiked(likesData.length > 0);
+    }
+  }, [likesData, isLoadingLikes]);
+
+  const handleSubmit = (values:any) => {
     mutate(values);
   };
-  
-  console.log("values",initialValues);
 
   return (
     <View>
@@ -48,11 +64,11 @@ const PostForm =  <T extends CreateLikeBody | UpdateLikeBody, U>({
         onSubmit={handleSubmit}
         validationSchema={schema}
       >
-        <ErrorMessage error={error} visible={isError} />
-        <AppSubmitButton>Like</AppSubmitButton>
+        <ErrorMessage error={error} />
+        <AppLikeButton disabled={isLiked}></AppLikeButton>
       </AppForm>
     </View>
   );
 };
 
-export default PostForm;
+export default CreateLike;
